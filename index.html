@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>QCM Résidanat</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F3F6F5; --sheet:#FFFFFF; --ink:#17252E; --muted:#5B6B73; --line:#D6E0DD;
+  --teal:#1D6E6A; --teal-soft:#E1EEEC; --good:#2F7A4C; --good-soft:#E3F1E7;
+  --bad:#B23A2C; --bad-soft:#F7E4E1; --amber:#9A5F0E; --amber-soft:#F6ECDB;
+  --case:#EAF1EF;
+  --font:"Atkinson Hyperlegible", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --paper:#10191D; --sheet:#172328; --ink:#E4ECEA; --muted:#98AAA8; --line:#2A3A40;
+    --teal:#5DB8B1; --teal-soft:#1C3634; --good:#6CC08B; --good-soft:#18322A;
+    --bad:#E9826F; --bad-soft:#3A2220; --amber:#E0B060; --amber-soft:#382C18; --case:#1B2B2F;
+  }
+}
+*,*::before,*::after{box-sizing:inherit}
+html,body{margin:0}
+body{background:var(--paper);color:var(--ink);font-family:var(--font);font-size:17px;line-height:1.5;-webkit-text-size-adjust:100%}
+main{max-width:720px;margin:0 auto;padding:20px 18px 64px}
+h1{font-size:1.75rem;line-height:1.2;margin:8px 0 6px}
+h2{font-size:1.15rem;margin:28px 0 10px}
+p{margin:0 0 12px}
+.muted{color:var(--muted)}
+button,select,input{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--teal);outline-offset:2px}
+.hidden{display:none!important}
+
+/* top bar */
+.bar{display:flex;align-items:center;gap:12px;justify-content:space-between;margin-bottom:14px}
+.bar .title{font-weight:700;color:var(--teal)}
+.linkbtn{background:none;border:none;color:var(--teal);text-decoration:underline;padding:4px 0}
+.progress{height:6px;background:var(--line);border-radius:3px;overflow:hidden;margin:0 0 18px}
+.progress span{display:block;height:100%;background:var(--teal);width:0;transition:width .25s}
+
+/* setup */
+fieldset{border:none;padding:0;margin:0 0 6px}
+legend{font-weight:700;padding:0;margin-bottom:8px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{display:inline-flex;align-items:center;gap:6px;border:1.5px solid var(--line);background:var(--sheet);border-radius:999px;padding:6px 12px;font-size:.95rem;user-select:none}
+.chip input{accent-color:var(--teal);margin:0}
+.chip:has(input:checked){border-color:var(--teal);background:var(--teal-soft)}
+.topics{max-height:300px;overflow:auto;border:1.5px solid var(--line);border-radius:10px;background:var(--sheet);padding:6px 4px}
+.topics label{display:flex;gap:10px;align-items:baseline;padding:6px 10px;border-radius:6px}
+.topics label:hover{background:var(--teal-soft)}
+.topics .n{color:var(--muted);font-size:.85rem;margin-left:auto}
+.topic-tools{display:flex;gap:16px;margin:0 0 8px}
+input[type=search]{width:100%;padding:9px 12px;border:1.5px solid var(--line);border-radius:10px;background:var(--sheet);margin-bottom:8px}
+.row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+select{padding:8px 10px;border:1.5px solid var(--line);border-radius:10px;background:var(--sheet)}
+.primary{background:var(--teal);color:#fff;border:none;border-radius:12px;padding:14px 22px;font-weight:700;font-size:1.05rem}
+@media (prefers-color-scheme:dark){.primary{color:#0E1A1C}}
+.primary:disabled{opacity:.45;cursor:not-allowed}
+.secondary{background:var(--sheet);border:1.5px solid var(--line);border-radius:12px;padding:12px 18px;font-weight:700}
+.count-line{margin:18px 0 14px}
+
+/* question */
+.meta{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;font-size:.9rem;color:var(--muted);margin-bottom:10px}
+.badge{display:inline-block;border-radius:6px;padding:2px 8px;font-size:.82rem;font-weight:700}
+.badge.check{background:var(--amber-soft);color:var(--amber)}
+.badge.low{background:var(--bad-soft);color:var(--bad)}
+.badge.ok{background:var(--good-soft);color:var(--good)}
+.case{background:var(--case);border-left:4px solid var(--teal);border-radius:0 10px 10px 0;padding:12px 14px;margin:0 0 16px;font-size:.97rem;max-height:40vh;overflow:auto}
+.stem{font-size:1.15rem;font-weight:700;margin:0 0 16px}
+.opts{display:flex;flex-direction:column;gap:10px;margin:0 0 18px}
+.opt{display:flex;gap:14px;align-items:flex-start;width:100%;text-align:left;background:var(--sheet);border:1.5px solid var(--line);border-radius:12px;padding:12px 14px;min-height:52px}
+.opt .bub{flex:none;width:30px;height:30px;border-radius:50%;border:2px solid var(--teal);display:grid;place-items:center;font-weight:700;color:var(--teal);font-size:.95rem;transition:background .12s,color .12s}
+.opt .txt{padding-top:3px}
+.opt[aria-pressed=true]{border-color:var(--teal)}
+.opt[aria-pressed=true] .bub{background:var(--teal);color:var(--sheet)}
+.opt:disabled{cursor:default}
+.opt.is-good{border-color:var(--good);background:var(--good-soft)}
+.opt.is-good .bub{border-color:var(--good);color:var(--good)}
+.opt.is-good[aria-pressed=true] .bub{background:var(--good);color:var(--sheet)}
+.opt.is-good[aria-pressed=false]{border-style:dashed;background:var(--sheet)}
+.opt.is-bad{border-color:var(--bad);background:var(--bad-soft)}
+.opt.is-bad .bub{border-color:var(--bad);background:var(--bad);color:var(--sheet)}
+.opt .tag{margin-left:auto;font-size:.8rem;font-weight:700;padding-top:5px;white-space:nowrap}
+.opt.is-good .tag{color:var(--good)} .opt.is-bad .tag{color:var(--bad)}
+.verdict{border-radius:12px;padding:14px 16px;margin:0 0 14px}
+.verdict.good{background:var(--good-soft);border:1.5px solid var(--good)}
+.verdict.bad{background:var(--bad-soft);border:1.5px solid var(--bad)}
+.verdict strong{font-size:1.1rem}
+.verdict .expl{margin:8px 0 6px}
+.verdict .ref{font-size:.88rem;color:var(--muted);margin:0}
+.actions{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.actions .grow{flex:1}
+.flag-box{margin:12px 0 0;display:flex;flex-direction:column;gap:8px}
+.flag-box textarea{width:100%;min-height:70px;border:1.5px solid var(--line);border-radius:10px;padding:10px;background:var(--sheet);font:inherit;color:inherit}
+.note{font-size:.9rem;color:var(--muted)}
+.review-bar{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 0;padding:12px;border:1.5px dashed var(--amber);border-radius:12px;align-items:center}
+.review-bar span{flex-basis:100%;font-size:.92rem}
+.okbtn{background:var(--good);color:#fff;border:none;border-radius:10px;padding:10px 14px;font-weight:700}
+.nobtn{background:var(--bad);color:#fff;border:none;border-radius:10px;padding:10px 14px;font-weight:700}
+
+/* results */
+.score{font-size:2.6rem;font-weight:700;color:var(--teal);line-height:1;margin:6px 0 4px}
+table{width:100%;border-collapse:collapse;font-size:.95rem;background:var(--sheet);border-radius:10px;overflow:hidden}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line)}
+th{font-size:.85rem;color:var(--muted);font-weight:700}
+td.num,th.num{text-align:right}
+.tablewrap{overflow-x:auto}
+.load-error{background:var(--sheet);border:1.5px solid var(--line);border-radius:12px;padding:16px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<main>
+
+  <!-- LOADING / ERROR -->
+  <section id="loading"><p class="muted">Chargement des questions…</p></section>
+  <section id="loadError" class="hidden load-error">
+    <h1>Fichier de questions introuvable</h1>
+    <p>La page n’a pas pu lire <b>questions.json</b>. Sur GitHub Pages, vérifiez qu’il est bien dans le même dossier que cette page. En local, choisissez le fichier ci-dessous.</p>
+    <input type="file" id="filePick" accept=".json,application/json">
+  </section>
+
+  <!-- SETUP -->
+  <section id="setup" class="hidden">
+    <h1>QCM Résidanat</h1>
+    <p class="muted" id="bankInfo"></p>
+
+    <h2>Examens</h2>
+    <div class="chips" id="examChips"></div>
+
+    <h2>Thèmes</h2>
+    <input type="search" id="topicSearch" placeholder="Filtrer les thèmes (ex. asthme, HTA)">
+    <div class="topic-tools">
+      <button class="linkbtn" id="allTopics">Tout cocher</button>
+      <button class="linkbtn" id="noTopics">Tout décocher</button>
+    </div>
+    <div class="topics" id="topicList"></div>
+
+    <h2>Fiabilité des réponses</h2>
+    <div class="chips" id="confChips">
+      <label class="chip"><input type="radio" name="conf" value="all" checked> Toutes</label>
+      <label class="chip"><input type="radio" name="conf" value="high"> Sûres seulement</label>
+      <label class="chip"><input type="radio" name="conf" value="review"> À vérifier (mode relecture)</label>
+    </div>
+
+    <h2>Options</h2>
+    <div class="chips">
+      <label class="chip"><input type="checkbox" id="onlyWrong"> Seulement mes erreurs passées</label>
+      <label class="chip"><input type="checkbox" id="shuffle" checked> Ordre aléatoire</label>
+    </div>
+    <div class="row" style="margin-top:12px">
+      <label for="howMany">Nombre de questions</label>
+      <select id="howMany">
+        <option value="10">10</option><option value="20" selected>20</option>
+        <option value="40">40</option><option value="80">80</option><option value="all">Toutes</option>
+      </select>
+    </div>
+
+    <p class="count-line"><b id="poolCount">0</b> questions correspondent à ces filtres.</p>
+    <button class="primary" id="start">Commencer</button>
+
+    <h2>Suivi</h2>
+    <p class="muted" id="trackInfo"></p>
+    <div class="actions">
+      <button class="secondary" id="exportBtn">Exporter mes corrections</button>
+      <button class="linkbtn" id="resetBtn">Effacer mon historique</button>
+    </div>
+    <p class="note">L’export crée un fichier avec les questions signalées et celles que vous avez confirmées, pour mettre à jour la banque.</p>
+  </section>
+
+  <!-- QUIZ -->
+  <section id="quiz" class="hidden">
+    <div class="bar">
+      <span class="title" id="qCounter"></span>
+      <button class="linkbtn" id="quit">Terminer la série</button>
+    </div>
+    <div class="progress"><span id="bar"></span></div>
+
+    <div class="meta" id="qMeta"></div>
+    <div class="case hidden" id="qCase"></div>
+    <p class="stem" id="qStem"></p>
+    <div class="opts" id="qOpts" role="group" aria-label="Propositions"></div>
+
+    <div id="afterBox" class="hidden">
+      <div class="verdict" id="verdict"></div>
+      <div class="review-bar hidden" id="reviewBar">
+        <span>Relecture : la réponse proposée vous semble-t-elle juste ?</span>
+        <button class="okbtn" id="confirmOk">Réponse juste</button>
+        <button class="nobtn" id="confirmBad">Réponse fausse</button>
+      </div>
+    </div>
+
+    <div class="actions" style="margin-top:6px">
+      <button class="primary" id="validate" disabled>Valider</button>
+      <button class="primary hidden" id="next">Question suivante</button>
+      <span class="grow"></span>
+      <button class="linkbtn" id="flagBtn">Signaler une erreur</button>
+    </div>
+    <div class="flag-box hidden" id="flagBox">
+      <textarea id="flagNote" placeholder="Qu’est-ce qui ne va pas ? (ex. la bonne réponse est ACD selon le cours)"></textarea>
+      <div class="actions"><button class="secondary" id="flagSave">Enregistrer le signalement</button><span class="note" id="flagMsg"></span></div>
+    </div>
+    <p class="note" style="margin-top:16px">Raccourcis : touches A à E pour cocher, Entrée pour valider puis passer à la suite.</p>
+  </section>
+
+  <!-- RESULTS -->
+  <section id="results" class="hidden">
+    <h1>Série terminée</h1>
+    <p class="score" id="scoreBig"></p>
+    <p class="muted" id="scoreSub"></p>
+    <div class="actions" style="margin:16px 0 8px">
+      <button class="primary" id="redoWrong">Refaire mes erreurs</button>
+      <button class="secondary" id="backSetup">Nouvelle série</button>
+    </div>
+    <h2>Par thème</h2>
+    <div class="tablewrap"><table id="byTopic"></table></div>
+  </section>
+
+</main>
+
+<script>
+const TOPICS={1:"AVC",2:"Adénopathies",3:"Anémies",4:"Appendicite",5:"Arrêt cardio-respiratoire",6:"Arthrite septique",7:"Asthme",8:"Bronchiolite",9:"BPCO",10:"Brûlures",11:"Cancers broncho-pulmonaires",12:"Cancer du cavum",13:"Cancer du col utérin",14:"Cancer du sein",15:"Cancers colorectaux",16:"Céphalées",17:"Coma",18:"Contraception",19:"Déshydratation",20:"Diabète",21:"Diarrhées chroniques",22:"Douleurs thoraciques",23:"Dyslipidémies",24:"Dysphagies",25:"Endocardite infectieuse",26:"Épilepsies",27:"Choc cardiogénique",28:"Choc hémorragique",29:"États confusionnels",30:"États septiques graves",31:"Fractures de jambe",32:"Grossesse extra-utérine",33:"Hématuries",34:"Hémorragies digestives",35:"Hépatites virales",36:"Hydatidose",37:"Hypercalcémies",38:"HTA",39:"Hyperthyroïdie",40:"Hypothyroïdie",41:"Ictères",42:"Infections des VAS",43:"Infections respiratoires basses",44:"IST",45:"Infections urinaires",46:"Insuffisance rénale aiguë",47:"Insuffisance surrénalienne aiguë",48:"Intoxications",49:"Ischémie aiguë des membres",50:"Lithiase urinaire",51:"MVTE",52:"Méningites",53:"Métrorragies",54:"Occlusion intestinale",55:"Œdèmes",56:"Œil rouge",57:"Péritonites aiguës",58:"Polyarthrite rhumatoïde",59:"Polytraumatisme",60:"Prééclampsie-éclampsie",61:"Douleur aiguë",62:"Purpuras",63:"Schizophrénie",64:"Splénomégalies",65:"SCA",66:"Transfusion",67:"Traumatisme crânien",68:"Troubles acido-basiques",69:"Troubles anxieux",70:"Troubles de l’humeur",71:"Hydratation et kaliémie",72:"Tuberculose pulmonaire",73:"Tumeurs de la prostate",74:"Ulcère gastroduodénal",75:"Vaccinations"};
+const LETTERS=["A","B","C","D","E","F"];
+const $=id=>document.getElementById(id);
+
+/* ---------- storage (safe) ---------- */
+function load(key,def){try{const v=localStorage.getItem(key);return v?JSON.parse(v):def}catch(e){return def}}
+function save(key,val){try{localStorage.setItem(key,JSON.stringify(val))}catch(e){}}
+let stats=load("qcm_stats",{});      // id -> {seen, correct, lastOk}
+let flags=load("qcm_flags",{});      // id -> note
+let reviews=load("qcm_reviews",{});  // id -> "ok" | "bad"
+
+/* ---------- data ---------- */
+let BANK=[];
+const examOf=q=>q.source.split(", Q")[0];
+
+async function init(){
+  try{
+    const r=await fetch("questions.json",{cache:"no-store"});
+    if(!r.ok) throw new Error(r.status);
+    setBank(await r.json());
+  }catch(e){
+    $("loading").classList.add("hidden");
+    $("loadError").classList.remove("hidden");
+  }
+}
+$("filePick").addEventListener("change",e=>{
+  const f=e.target.files[0]; if(!f) return;
+  f.text().then(t=>{try{setBank(JSON.parse(t))}catch(err){alert("Ce fichier n’est pas un JSON valide.")}});
+});
+
+function setBank(data){
+  BANK=data.filter(q=>q&&q.id&&q.options&&q.answer);
+  $("loading").classList.add("hidden"); $("loadError").classList.add("hidden");
+  buildSetup(); show("setup");
+}
+
+function show(id){["setup","quiz","results"].forEach(s=>$(s).classList.toggle("hidden",s!==id));window.scrollTo(0,0)}
+
+/* ---------- setup ---------- */
+function buildSetup(){
+  const exams=[...new Set(BANK.map(examOf))];
+  $("bankInfo").textContent=`${BANK.length} questions issues de ${exams.length} examens blancs, classées par thème du programme.`;
+  $("examChips").innerHTML=exams.map(e=>`<label class="chip"><input type="checkbox" name="exam" value="${e}" checked> ${e}</label>`).join("");
+  const counts={}; BANK.forEach(q=>counts[q.topic]=(counts[q.topic]||0)+1);
+  const topics=Object.keys(counts).map(Number).sort((a,b)=>a-b);
+  $("topicList").innerHTML=topics.map(t=>`<label data-name="${(TOPICS[t]||"Thème "+t).toLowerCase()}"><input type="checkbox" name="topic" value="${t}" checked> ${t}. ${TOPICS[t]||"Thème "+t}<span class="n">${counts[t]}</span></label>`).join("");
+  document.querySelectorAll("#setup input").forEach(i=>i.addEventListener("change",updateCount));
+  $("howMany").addEventListener("change",updateCount);
+  updateCount(); updateTrack();
+}
+$("topicSearch").addEventListener("input",e=>{
+  const v=e.target.value.trim().toLowerCase();
+  document.querySelectorAll("#topicList label").forEach(l=>l.classList.toggle("hidden",v&&!l.dataset.name.includes(v)));
+});
+$("allTopics").onclick=()=>{document.querySelectorAll("#topicList label:not(.hidden) input").forEach(i=>i.checked=true);updateCount()};
+$("noTopics").onclick=()=>{document.querySelectorAll("#topicList label:not(.hidden) input").forEach(i=>i.checked=false);updateCount()};
+
+function currentPool(){
+  const exams=new Set([...document.querySelectorAll("input[name=exam]:checked")].map(i=>i.value));
+  const topics=new Set([...document.querySelectorAll("input[name=topic]:checked")].map(i=>+i.value));
+  const conf=document.querySelector("input[name=conf]:checked").value;
+  const onlyWrong=$("onlyWrong").checked;
+  return BANK.filter(q=>{
+    if(!exams.has(examOf(q))||!topics.has(q.topic)) return false;
+    if(conf==="high"&&q.confidence!=="haute") return false;
+    if(conf==="review"&&(q.confidence==="haute"||reviews[q.id])) return false;
+    if(onlyWrong&&!(stats[q.id]&&stats[q.id].lastOk===false)) return false;
+    return true;
+  });
+}
+function updateCount(){const n=currentPool().length;$("poolCount").textContent=n;$("start").disabled=n===0}
+function updateTrack(){
+  const seen=Object.keys(stats).length, ok=Object.values(stats).filter(s=>s.lastOk).length;
+  const nf=Object.keys(flags).length, nr=Object.keys(reviews).length;
+  $("trackInfo").textContent=seen
+    ?`${seen} questions déjà travaillées, dont ${ok} réussies la dernière fois. ${nf} signalement(s), ${nr} réponse(s) relue(s).`
+    :"Aucune question travaillée pour l’instant. Votre progression est enregistrée sur cet appareil.";
+}
+
+/* ---------- quiz ---------- */
+let series=[],pos=0,chosen=new Set(),answered=false,results=[];
+function shuffleArr(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+
+function makeSeries(pool){
+  // keep clinical-case questions together and in order
+  const groups=new Map();
+  pool.forEach(q=>{const k=q.case?examOf(q)+"|"+q.case.slice(0,120):q.id; if(!groups.has(k)) groups.set(k,[]); groups.get(k).push(q)});
+  let g=[...groups.values()];
+  if($("shuffle").checked) shuffleArr(g);
+  const flat=g.flat();
+  const hm=$("howMany").value; if(hm==="all") return flat;
+  const n=+hm, out=[];
+  for(const grp of g){ if(out.length>=n) break; out.push(...grp) }
+  return out;
+}
+$("start").onclick=()=>startSeries(makeSeries(currentPool()));
+function startSeries(list){series=list;pos=0;results=[];show("quiz");render()}
+
+function render(){
+  const q=series[pos]; chosen=new Set(); answered=false;
+  $("qCounter").textContent=`Question ${pos+1} sur ${series.length}`;
+  $("bar").style.width=(pos/series.length*100)+"%";
+  const badge=q.confidence==="haute"?"":q.confidence==="faible"?'<span class="badge low">Réponse incertaine</span>':'<span class="badge check">À vérifier</span>';
+  const rv=reviews[q.id]==="ok"?'<span class="badge ok">Relue et confirmée</span>':"";
+  $("qMeta").innerHTML=`<span>${TOPICS[q.topic]||"Thème "+q.topic}</span><span>${q.source}</span>${badge}${rv}`;
+  const prev=series[pos-1];
+  const sameCase=prev&&prev.case&&q.case===prev.case;
+  $("qCase").classList.toggle("hidden",!q.case);
+  $("qCase").textContent=q.case||"";
+  if(q.case&&!sameCase) $("qCase").scrollTop=0;
+  $("qStem").textContent=q.question;
+  $("qOpts").innerHTML=Object.entries(q.options).map(([k,v])=>`<button class="opt" data-k="${k}" aria-pressed="false"><span class="bub">${k}</span><span class="txt"></span><span class="tag"></span></button>`).join("");
+  [...$("qOpts").children].forEach(b=>{b.querySelector(".txt").textContent=q.options[b.dataset.k];b.onclick=()=>toggle(b.dataset.k)});
+  $("afterBox").classList.add("hidden"); $("validate").classList.remove("hidden"); $("validate").disabled=true;
+  $("next").classList.add("hidden"); $("flagBox").classList.add("hidden"); $("flagMsg").textContent="";
+  $("flagNote").value=flags[q.id]||"";
+  $("flagBtn").textContent=flags[q.id]?"Signalement enregistré (modifier)":"Signaler une erreur";
+}
+function toggle(k){
+  if(answered) return;
+  chosen.has(k)?chosen.delete(k):chosen.add(k);
+  document.querySelectorAll("#qOpts .opt").forEach(b=>b.setAttribute("aria-pressed",chosen.has(b.dataset.k)));
+  $("validate").disabled=chosen.size===0;
+}
+$("validate").onclick=validate;
+function validate(){
+  if(answered||chosen.size===0) return;
+  answered=true;
+  const q=series[pos], good=new Set(q.answer);
+  const ok=good.size===chosen.size&&[...good].every(k=>chosen.has(k));
+  let rightProps=0;
+  document.querySelectorAll("#qOpts .opt").forEach(b=>{
+    const k=b.dataset.k, isGood=good.has(k), picked=chosen.has(k);
+    b.disabled=true;
+    if(isGood===picked) rightProps++;
+    if(isGood){b.classList.add("is-good");b.querySelector(".tag").textContent=picked?"Juste":"Oubliée"}
+    else if(picked){b.classList.add("is-bad");b.querySelector(".tag").textContent="Fausse"}
+  });
+  const total=Object.keys(q.options).length;
+  const warn=q.confidence==="haute"?"":`<p class="ref"><b>${q.confidence==="faible"?"Réponse incertaine":"Réponse à vérifier"}</b> : non confirmée par un corrigé officiel.</p>`;
+  $("verdict").className="verdict "+(ok?"good":"bad");
+  $("verdict").innerHTML=`<strong>${ok?"Juste":"Faux"}</strong> <span class="muted">(${rightProps}/${total} propositions bien jugées)</span>
+    <p>Réponse : <b>${q.answer.join("")}</b></p><p class="expl"></p><p class="ref"></p>${warn}`;
+  $("verdict").querySelector(".expl").textContent=q.explanation||"";
+  $("verdict").querySelector(".ref").textContent="Référence : "+(q.reference||"—");
+  $("afterBox").classList.remove("hidden");
+  $("reviewBar").classList.toggle("hidden",q.confidence==="haute");
+  $("validate").classList.add("hidden"); $("next").classList.remove("hidden");
+  $("next").textContent=pos===series.length-1?"Voir mes résultats":"Question suivante";
+  const s=stats[q.id]||{seen:0,correct:0}; s.seen++; if(ok) s.correct++; s.lastOk=ok; stats[q.id]=s; save("qcm_stats",stats);
+  results.push({q,ok});
+  $("next").focus();
+}
+$("next").onclick=()=>{pos++; pos<series.length?render():finish()};
+$("quit").onclick=()=>{results.length?finish():(show("setup"),updateCount(),updateTrack())};
+
+/* review + flags */
+$("confirmOk").onclick=()=>{const q=series[pos];reviews[q.id]="ok";save("qcm_reviews",reviews);$("reviewBar").innerHTML="<span>Merci, réponse marquée comme confirmée.</span>"};
+$("confirmBad").onclick=()=>{const q=series[pos];reviews[q.id]="bad";save("qcm_reviews",reviews);$("flagBox").classList.remove("hidden");$("flagNote").focus();$("reviewBar").innerHTML="<span>Notée comme fausse. Précisez la bonne réponse ci-dessous si possible.</span>"};
+$("flagBtn").onclick=()=>{$("flagBox").classList.toggle("hidden");$("flagNote").focus()};
+$("flagSave").onclick=()=>{
+  const q=series[pos], t=$("flagNote").value.trim();
+  if(t){flags[q.id]=t}else{delete flags[q.id]}
+  save("qcm_flags",flags);
+  $("flagMsg").textContent=t?"Signalement enregistré.":"Signalement supprimé.";
+  $("flagBtn").textContent=t?"Signalement enregistré (modifier)":"Signaler une erreur";
+};
+
+/* results */
+function finish(){
+  const n=results.length, ok=results.filter(r=>r.ok).length;
+  $("scoreBig").textContent=n?Math.round(ok/n*100)+" %":"—";
+  $("scoreSub").textContent=`${ok} question(s) juste(s) sur ${n}, en notation tout-ou-rien.`;
+  const by={}; results.forEach(r=>{const t=r.q.topic;by[t]=by[t]||{n:0,ok:0};by[t].n++;if(r.ok)by[t].ok++});
+  const rows=Object.entries(by).sort((a,b)=>(a[1].ok/a[1].n)-(b[1].ok/b[1].n));
+  $("byTopic").innerHTML="<tr><th>Thème</th><th class='num'>Justes</th><th class='num'>Score</th></tr>"+
+    rows.map(([t,v])=>`<tr><td>${TOPICS[t]||"Thème "+t}</td><td class="num">${v.ok}/${v.n}</td><td class="num">${Math.round(v.ok/v.n*100)} %</td></tr>`).join("");
+  const wrong=results.filter(r=>!r.ok).map(r=>r.q);
+  $("redoWrong").classList.toggle("hidden",!wrong.length);
+  $("redoWrong").onclick=()=>startSeries(wrong);
+  $("bar").style.width="100%";
+  show("results");
+}
+$("backSetup").onclick=()=>{show("setup");updateCount();updateTrack()};
+
+/* export / reset */
+$("exportBtn").onclick=()=>{
+  const data={exported:new Date().toISOString(),flags,reviews};
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"});
+  const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="corrections-qcm.json";
+  document.body.appendChild(a);a.click();a.remove();
+};
+$("resetBtn").onclick=()=>{
+  if(!confirm("Effacer l’historique des réponses ? Les signalements et relectures sont conservés.")) return;
+  stats={};save("qcm_stats",stats);updateTrack();updateCount();
+};
+
+/* keyboard */
+document.addEventListener("keydown",e=>{
+  if($("quiz").classList.contains("hidden")) return;
+  if(e.target.tagName==="TEXTAREA") return;
+  const k=e.key.toUpperCase();
+  if(LETTERS.includes(k)&&series[pos]&&series[pos].options[k]){toggle(k);e.preventDefault()}
+  else if(e.key==="Enter"){ if(!answered) validate(); else $("next").click(); e.preventDefault()}
+});
+
+init();
+</script>
+</body>
+</html>
